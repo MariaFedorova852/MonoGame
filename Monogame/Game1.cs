@@ -162,8 +162,9 @@ namespace Monogame
             speed = 200;
         }
 
-        public void SetRunAnimation() //Устанавливает анимацию в зависимости
+        public void SetRunAnimation() 
         {
+            //Устанавливает анимацию в зависимости от движения
             if (isMovingRight || isMovingLeft) currentFrame.Y = 4;
             if (isMovingUp) currentFrame.Y = 5;
             else if (isMovingDown) currentFrame.Y = 3;
