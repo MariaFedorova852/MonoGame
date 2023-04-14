@@ -7,8 +7,8 @@ namespace Monogame
 {
     public class Game1 : Game
     {
-        public Texture2D playerSheet;
-        public static Entity player;
+        public Texture2D playerSheet; //Спрайты игрока
+        public static Entity player; //сущность игрока
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
@@ -23,11 +23,11 @@ namespace Monogame
             IsMouseVisible = true;
             // Создание персонажа по модели Player
             player = new Entity(new Vector2(0, 0),
-                    Player.idleFrames,
+                    Player.idleFrames, //Отвечают за клоичество кадров анимации
                     Player.runFrames,
                     Player.attackFrames,
                     Player.deathFrames,
-                    playerSheet);
+                    playerSheet); 
         }
 
         protected override void Initialize()
@@ -57,7 +57,7 @@ namespace Monogame
 
             KeyboardState key = Keyboard.GetState();
             
-            // Контроллер - управелние персонажем
+            // Контроллер - управление персонажем
             #region
             if (key.IsKeyDown(Keys.W))
             {
@@ -107,13 +107,13 @@ namespace Monogame
             base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw(GameTime gameTime) 
         {
             GraphicsDevice.Clear(Color.White);
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
-            
-            spriteBatch.Draw(playerSheet, player.position,
+            //Отрисовывается персонаж
+            spriteBatch.Draw(playerSheet, player.position, 
                 new Rectangle(player.currentFrame.X * player.size,
                 player.currentFrame.Y * player.size, player.size, player.size),
                 Color.White, 0, Vector2.Zero, 1, player.flip, 0);
@@ -137,8 +137,8 @@ namespace Monogame
         public bool isMovingDown = false;
         public bool isAttack = false;
 
-        public Point currentFrame;
-        public int currentLimit;
+        public Point currentFrame; //Текущая анимация
+        public int currentLimit; //Количество фреймов для каждой анимации
         public int idleFrames;
         public int runFrames;
         public int attackFrames;
@@ -162,7 +162,7 @@ namespace Monogame
             speed = 200;
         }
 
-        public void SetRunAnimation()
+        public void SetRunAnimation() //Устанавливает анимацию в зависимости
         {
             if (isMovingRight || isMovingLeft) currentFrame.Y = 4;
             if (isMovingUp) currentFrame.Y = 5;
