@@ -12,6 +12,7 @@ namespace Monogame
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
+        // частота обновления анимации
         int currentTime = 0;
         int period = 90;
 
@@ -47,7 +48,6 @@ namespace Monogame
             
             currentTime += gameTime.ElapsedGameTime.Milliseconds;
 
-            // частота обновления анимации
             if (currentTime > period)
             {
                 currentTime -= period;
