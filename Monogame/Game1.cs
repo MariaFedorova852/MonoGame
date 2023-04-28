@@ -17,13 +17,6 @@ namespace Monogame
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            // Создание персонажа по модели Player
-            player = new Entity(new Vector2(0, 0),
-                    Player.idleFrames, //Отвечают за количество кадров анимации
-                    Player.runFrames,
-                    Player.attackFrames,
-                    Player.deathFrames,
-                    playerSheet); 
         }
 
         protected override void Initialize()
