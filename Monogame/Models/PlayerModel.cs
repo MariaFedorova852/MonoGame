@@ -11,7 +11,7 @@ namespace Monogame.Models
     {
         public int size => 192;
 
-        public int speed => 400;
+        public int speed => 250;
 
         public int spriteSize => 48;
 
@@ -21,6 +21,6 @@ namespace Monogame.Models
 
         int ICreature.attackFrames => 4;
 
-        int ICreature.deathFrames => 4;
+        int ICreature.deathFrames => 3;
     }
 }

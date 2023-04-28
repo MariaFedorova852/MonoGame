@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Monogame.interfaces
@@ -26,7 +26,7 @@ namespace Monogame.interfaces
         int size { get; set; }
 
         Texture2D spriteSheet { get; set; }
-        Rectangle hitBox { get; }
+        RectangleF hitBox { get; }
         SpriteEffects flip { get; set; }
 
 

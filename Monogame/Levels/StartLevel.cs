@@ -2,30 +2,32 @@
 using Monogame.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Global;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Monogame.Levels
 {
     public class LevelStart : ILevel
     {
-        //public Slime slime1;
-        //public Slime slime2;
-        //public Slime slime3;
+        public Slime slime1;
+        public Slime slime2;
+        public Slime slime3;
 
         public LevelStart()
         {
-            //slime1 = new Slime(500, 500, new SlimeModel(), Textures.slimeSheet);
-            //slime2 = new Slime(300, 500, new SlimeModel(), Textures.slimeSheet);
-            //slime3 = new Slime(800, 800, new SlimeModel(), Textures.slimeSheet);
+            var texture = Globals.Content.Load<Texture2D>("slimeEnlarged");
+            var model = new SlimeModel();
+            slime1 = new Slime(new Vector2(500, 500), model, texture);
+            slime2 = new Slime(new Vector2(300, 500), model, texture);
+            slime3 = new Slime(new Vector2(200, 500), model, texture);
         }
 
         public int[,] map => new int[,]
             {
                 {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
                 {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11},
-                {9, 0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11},
+                {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11},
                 {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11},
                 {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11},
                 {9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11},
@@ -47,6 +49,6 @@ namespace Monogame.Levels
 
         public int mapWidth => 20;
         public int mapHeight => 20;
-        public List<IEntity> entities => new List<IEntity> { /*slime1, slime2, slime3 */};
+        public List<IEntity> entities => new List<IEntity> { slime1, slime2, slime3 };
     }
 }

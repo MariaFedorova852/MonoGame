@@ -16,7 +16,7 @@ namespace Monogame
             direction = Vector2.Zero;
 
             #region Move
-            if (!player.isAttack)
+            if (player.isAlive && !player.isAttack)
             {
                 if (key.IsKeyDown(Keys.W))
                 {
@@ -44,48 +44,57 @@ namespace Monogame
                 if (key.IsKeyUp(Keys.W) && player.isMovingUp)
                 {
                     player.isMovingUp = false;
-                    if (!player.IsMoving()) player.currentFrame.Y = 2;
+                    if (player.isAlive && !player.IsMoving()) player.currentFrame.Y = 2;
                 }
                 if (key.IsKeyUp(Keys.S) && player.isMovingDown)
                 {
                     player.isMovingDown = false;
-                    if (!player.IsMoving()) player.currentFrame.Y = 0;
+                    if (player.isAlive && !player.IsMoving()) player.currentFrame.Y = 0;
                 }
                 if (key.IsKeyUp(Keys.A) && player.isMovingLeft)
                 {
                     player.isMovingLeft = false;
-                    if (!player.IsMoving()) player.currentFrame.Y = 1;
+                    if (player.isAlive && !player.IsMoving()) player.currentFrame.Y = 1;
                 }
                 if (key.IsKeyUp(Keys.D) && player.isMovingRight)
                 {
                     player.isMovingRight = false;
-                    if (!player.IsMoving()) player.currentFrame.Y = 1;
+                    if (player.isAlive && !player.IsMoving()) player.currentFrame.Y = 1;
                 }
             }
             #endregion
-            if (!player.isAttack)
+
+            if (player.isAlive && !player.isAttack)
             {
                 if (key.IsKeyDown(Keys.Up))
                 {
                     player.isAttack = true;
                     player.SetAnimation(8);
+                    player.currentAttack = player.attackUp;
+                    player.Attack();
                 }
                 if (key.IsKeyDown(Keys.Down))
                 {
                     player.isAttack = true;
                     player.SetAnimation(6);
+                    player.currentAttack = player.attackDown;
+                    player.Attack();
                 }
                 if (key.IsKeyDown(Keys.Left))
                 {
                     player.isAttack = true;
                     player.flip = SpriteEffects.FlipHorizontally;
                     player.SetAnimation(7);
+                    player.currentAttack = player.attackLeft;
+                    player.Attack();
                 }
                 if (key.IsKeyDown(Keys.Right))
                 {
                     player.isAttack = true;
                     player.flip = SpriteEffects.None;
                     player.SetAnimation(7);
+                    player.currentAttack = player.attackRight;
+                    player.Attack();
                 }
             }
             if (direction != Vector2.Zero)

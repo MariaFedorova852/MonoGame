@@ -37,6 +37,7 @@ namespace Monogame
         public void Update()
         {
             PlayerController.Update();
+            map.currentLevel.entities.ForEach(e => e.Update());
             player.Update();
             CalculateTranslation();
         }
@@ -45,6 +46,7 @@ namespace Monogame
         {
             Globals.SpriteBatch.Begin(transformMatrix: _translation);
             map.Draw();
+            map.currentLevel.entities.ForEach(e => e.Draw());
             player.Draw();
             Globals.SpriteBatch.End();
         }

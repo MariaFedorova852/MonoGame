@@ -2,12 +2,15 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monogame.interfaces;
+using MonoGame.Extended;
+using System.Linq;
+using static Monogame.GameManager;
 
 namespace Monogame.Models
 {
     public class Player : IEntity
     {
-        public Rectangle currentAttack;
+        public RectangleF currentAttack;
         public Vector2 position;
         public Point currentFrame;
         public int healthPoint { get; set; }
@@ -20,6 +23,7 @@ namespace Monogame.Models
         public bool isMovingDown { get; set; }
         public bool isAttack { get; set; }
         public bool deathAnimationFlag { get; set; }
+        public bool flag { get; set; }
 
         public int currentLimit { get; set; }
         public int idleFrames { get; set; }
@@ -32,11 +36,12 @@ namespace Monogame.Models
         public SpriteEffects flip { get; set; }
 
         public Texture2D spriteSheet { get; set; }
-        public Rectangle hitBox => new Rectangle(0, 0 + 136, 36, 28);
-        //public Rectangle attackUp => new Rectangle(posX - 38, posY + 90, 76, 20);
-        //public Rectangle attackDown => new Rectangle(posX - 38, posY + 172, 76, 20);
-        //public Rectangle attackRight => new Rectangle(posX + 36, posY + 128, 24, 44);
-        //public Rectangle attackLeft => new Rectangle(posX - 60, posY + 128, 24, 44);
+        public RectangleF hitBox => new RectangleF(position.X + 80, position.Y + 142, 36, 20);
+        //public RectangleF hitBox => new RectangleF(position.X, position.Y, 192, 192);
+        public RectangleF attackUp => new RectangleF(position.X + 61, position.Y + 88, 72, 20);
+        public RectangleF attackDown => new RectangleF(position.X + 61, position.Y + 172, 72, 20);
+        public RectangleF attackRight => new RectangleF(position.X + 140, position.Y + 128, 24, 48);
+        public RectangleF attackLeft => new RectangleF(position.X + 28, position.Y + 128, 24, 48);
 
         private static Vector2 _minPos, _maxPos;
 
@@ -56,14 +61,18 @@ namespace Monogame.Models
             currentLimit = idleFrames;
             size = model.size;
             speed = model.speed;
+            isAlive = true;
         }
 
         public void Update()
         {
-            position += PlayerController.Direction * Globals.Time * speed;
-            position = Vector2.Clamp(position, _minPos, _maxPos);
+            if (isAlive)
+            {
+                position += PlayerController.Direction * Globals.Time * speed;
+                position = Vector2.Clamp(position, _minPos, _maxPos);
+            }
 
-            if (++currentTime > period)
+            if (!flag && ++currentTime > period)
             {
                 currentTime = 0;
                 currentFrame.X = ++currentFrame.X % currentLimit;
@@ -79,6 +88,16 @@ namespace Monogame.Models
                 new Rectangle(currentFrame.X * size,
                 currentFrame.Y * size, size, size),
                 Color.White, 0, Vector2.Zero, 1, flip, 0);
+            Globals.SpriteBatch.DrawRectangle(hitBox, Color.Black);
+            Globals.SpriteBatch.DrawRectangle(currentAttack, Color.Black);
+
+            if (!isAlive)
+            {
+                StopEntity();
+                if (!deathAnimationFlag) SetAnimation(9);
+                deathAnimationFlag = true;
+                if (currentFrame.X == 2) flag = true;
+            }
 
             if (isAttack)
             {
@@ -153,14 +172,13 @@ namespace Monogame.Models
 
         public void Attack()
         {
-            //foreach (var entity in Model.entities.Where(x => x.GetType() != typeof(Player)))
-            //{
-
-            //    if (currentAttack.IntersectsWith(entity.hitBox))
-            //    {
-            //        entity.isAlive = false;
-            //    }
-            //}
+            foreach (var entity in map.currentLevel.entities.Where(x => x.GetType() != typeof(Player)))
+            {
+                if (currentAttack.Intersects(entity.hitBox))
+                {
+                    entity.isAlive = false;
+                }
+            }
         }
     }
 }
