@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Monogame.Levels;
 using Monogame.interfaces;
+using SharpDX.DirectWrite;
+using MonoGame.Extended.BitmapFonts;
 
 namespace Monogame
 {
@@ -21,7 +23,7 @@ namespace Monogame
 
         public GameManager()
         {
-            player = new Player(new Vector2(1800, 800), new PlayerModel(), Globals.Content.Load<Texture2D>("playerEnlarged++"));
+            player = new Player(new Vector2(300, 150), new PlayerModel(), Globals.Content.Load<Texture2D>("playerEnlarged++"));
             map = new MapController();
             map.currentLevel.Level.Entities.ForEach(e => e.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize)));
             player.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));

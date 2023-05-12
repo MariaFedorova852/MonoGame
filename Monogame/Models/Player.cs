@@ -119,20 +119,25 @@ namespace Monogame.Models
                     flag2 = false;
                 }
             }
-
-
             if (flag1) position.X += dirX;
             if (flag2) position.Y += dirY;
 
             position = Vector2.Clamp(position, _minPos, _maxPos);
+            ChangeMap(dirX);
+        }
 
-            if (new RectangleF(HitBox.X + dirX + 5, HitBox.Y, HitBox.Width, HitBox.Height).Intersects(map.currentLevel.Level.Exit))
+        private void ChangeMap(float dirX)
+        {
+            if (map.currentLevel.Level.Entities.All(x => !x.IsAlive))
             {
-                map.ChangeCurrentLevel(true);
-            }
-            if (new RectangleF(HitBox.X + dirX - 5, HitBox.Y, HitBox.Width, HitBox.Height).Intersects(map.currentLevel.Level.Enter))
-            {
-                map.ChangeCurrentLevel(false);
+                if (new RectangleF(HitBox.X + dirX + 5, HitBox.Y, HitBox.Width, HitBox.Height).Intersects(map.currentLevel.Level.Exit))
+                {
+                    map.ChangeCurrentLevel(true);
+                }
+                if (new RectangleF(HitBox.X + dirX - 5, HitBox.Y, HitBox.Width, HitBox.Height).Intersects(map.currentLevel.Level.Enter))
+                {
+                    map.ChangeCurrentLevel(false);
+                }
             }
         }
 
@@ -143,7 +148,7 @@ namespace Monogame.Models
             Globals.SpriteBatch.Draw(SpriteSheet, position,
                 new Rectangle(currentFrame.X * Size, currentFrame.Y * Size, Size, Size),
                 Color.White, 0, Vector2.Zero, 1, Flip, 0);
-            Globals.SpriteBatch.DrawRectangle(HitBox, Color.Black);
+            //Globals.SpriteBatch.DrawRectangle(HitBox, Color.Black);
             //Globals.SpriteBatch.DrawRectangle(new RectangleF(pos.X, pos.Y, 192, delta), Color.Black);
             //Globals.SpriteBatch.DrawRectangle(currentAttack, Color.Black);
 

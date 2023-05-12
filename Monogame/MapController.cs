@@ -10,7 +10,6 @@ using Monogame.Levels;
 using Monogame.objects;
 using MonoGame.Extended;
 using static Monogame.GameManager;
-using System.Linq;
 
 namespace Monogame
 {
@@ -35,6 +34,8 @@ namespace Monogame
             levels = new LinckedLevels
             {
                 new LevelStart(),
+                new Level1(patterns.patternEntities1, patterns.patternObjects1),
+                new Level1(patterns.patternEntities2, patterns.patternObjects2),
             };
             currentLevel = levels.Head;
         }
@@ -53,20 +54,6 @@ namespace Monogame
             currentLevel.Level.Entities.ForEach(e => e.SetBounds(map.mapSize, new Point(cellSize, cellSize)));
             player.SetBounds(map.mapSize, new Point(cellSize, cellSize));
         }
-
-        //private LinckedLevels GenerateLevels()
-        //{
-        //    LinckedLevels levels = new LinckedLevels();
-        //    var patterns = new LevelPatterns();
-        //    levels.Add(new LevelStart());
-
-        //    foreach (var p in patterns.patterns)
-        //    {
-        //        levels.Add(new Level1 { Entities = p });
-        //    }
-
-        //    return levels;
-        //}
 
         public void UpdateCurrentLevel(ILevel newLevel, Player player)
         {
@@ -210,7 +197,7 @@ namespace Monogame
                     }
                 }
             }
-            Globals.SpriteBatch.DrawRectangle(currentLevel.Level.Exit, Color.Black);
+            //Globals.SpriteBatch.DrawRectangle(currentLevel.Level.Exit, Color.Black);
         }
 
         private void DrawTiles(int srcPosX, int srcPosY, int posI, int posJ)
@@ -282,8 +269,17 @@ namespace Monogame
 
     class LevelPatterns
     {
-
-        public List<IObject> pattern1 = new List<IObject>
+        private static readonly SlimeModel model = new SlimeModel(); 
+        private static readonly Texture2D texture = Globals.Content.Load<Texture2D>("slimeEnlarged");
+        
+        public List<IEntity> patternEntities1 = new List<IEntity>
+        {
+            new Slime(new Vector2(128, 32), model, texture),
+            new Slime(new Vector2(128, 532), model, texture),
+            new Slime(new Vector2(800, 532), model, texture),
+            new Slime(new Vector2(800, 32), model, texture),
+        };
+        public List<IObject> patternObjects1 = new List<IObject>
         {
             new Rock(new Vector2(64, 256)),
             new Rock(new Vector2(128, 256)),
@@ -322,19 +318,22 @@ namespace Monogame
             new Rock(new Vector2(576, 64)),
 
         };
-        //public static List<IEntity> pattern2 = new List<IEntity>
-        //{
-        //    new Rock(new Point(200, 360)),
-        //    new Rock(new Point(720, 440)),
-        //    new Rock(new Point(300, 32)),
-        //    new Tree(new Point(600, 0)),
-        //    new Slime(800, 532, slimeModel),
-        //    new Slime(200, 453, slimeModel),
-        //    new Slime(500, 300, slimeModel),
-        //    new Rock(new Point(832, 256)),
-        //    new Rock(new Point(832, 304)),
-        //    new Rock(new Point(832, 352)),
-        //    new Rock(new Point(832, 400))
-        //};
+        public List<IObject> patternObjects2 = new List<IObject>
+        {
+            new Rock(new Vector2(200, 360)),
+            new Rock(new Vector2(720, 440)),
+            new Rock(new Vector2(300, 32)),
+            new Tree(new Vector2(600, 0)),
+            new Rock(new Vector2(832, 256)),
+            new Rock(new Vector2(832, 304)),
+            new Rock(new Vector2(832, 352)),
+            new Rock(new Vector2(832, 400))
+        };
+        public List<IEntity> patternEntities2 = new List<IEntity>
+        {
+            new Slime(new Vector2(800, 532), model, texture),
+            new Slime(new Vector2(200, 453), model, texture),
+            new Slime(new Vector2(500, 300), model, texture),
+        };
     }
 }
