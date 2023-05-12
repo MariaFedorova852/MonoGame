@@ -15,139 +15,146 @@ namespace Monogame.Models
         public Vector2 position;
         public Point currentFrame;
 
-        public Vector2 pos { get => position; set => position = value; }
-        public HealthBar healthPoint { get; set; }
-        public bool isAlive { get => healthPoint.currentValue > 0; }
-        public float speed { get; set; }
+        public Vector2 Pos { get => position; set => position = value; }
+        public HealthBar HealthPoint { get; set; }
+        public bool IsAlive { get => HealthPoint.currentValue > 0; }
+        public float Speed { get; set; }
 
-        public bool isMovingLeft { get; set; }
-        public bool isMovingRight { get; set; }
-        public bool isMovingUp { get; set; }
-        public bool isMovingDown { get; set; }
-        public bool isAttack { get; set; }
-        public bool deathAnimationFlag { get; set; }
+        public bool IsMovingLeft { get; set; }
+        public bool IsMovingRight { get; set; }
+        public bool IsMovingUp { get; set; }
+        public bool IsMovingDown { get; set; }
+        public bool IsAttack { get; set; }
+        public bool DeathAnimationFlag { get; set; }
         public bool flag { get; set; }
 
-        public int currentLimit { get; set; }
-        public int idleFrames { get; set; }
-        public int runFrames { get; set; }
-        public int attackFrames { get; set; }
-        public int deathFrames { get; set; }
+        public int CurrentLimit { get; set; }
+        public int IdleFrames { get; set; }
+        public int RunFrames { get; set; }
+        public int AttackFrames { get; set; }
+        public int DeathFrames { get; set; }
 
-        public int spriteSize { get; set; }
-        public int size { get; set; }
-        public SpriteEffects flip { get; set; }
+        public int SpriteSize { get; set; }
+        public int Size { get; set; }
+        public SpriteEffects Flip { get; set; }
 
-        public Texture2D spriteSheet { get; set; }
-        public RectangleF hitBox => new RectangleF(position.X + 40, position.Y + 52, 48, 40);
+        public Texture2D SpriteSheet { get; set; }
+        public RectangleF HitBox => new(position.X + 40, position.Y + 52, 48, 40);
 
-        public int delta => 90;
+        public int Delta => 90;
 
         private static Vector2 _minPos, _maxPos;
-        public Vector2 direction { get; set; }
+        public Vector2 Direction { get; set; }
 
-        int currentTime = 0;
-        int period = 8;
+        private readonly int attackPeriod = 100;
+        readonly int period = 8;
         private int attackTime = 20;
-        private int attackPeriod = 100;
+        private int currentTime = 0;
 
         public Slime(Vector2 position, ICreature model, Texture2D spriteSheet)
         {
             this.position = position;
-            idleFrames = model.idleFrames;
-            runFrames = model.runFrames;
-            attackFrames = model.attackFrames;
-            deathFrames = model.deathFrames;
-            this.spriteSheet = spriteSheet;
+            IdleFrames = model.IdleFrames;
+            RunFrames = model.RunFrames;
+            AttackFrames = model.AttackFrames;
+            DeathFrames = model.DeathFrames;
+            SpriteSheet = spriteSheet;
             currentFrame = new Point(0, 0);
-            flip = SpriteEffects.None;
-            currentLimit = idleFrames;
-            size = model.size;
-            speed = model.speed;
-            healthPoint = new HealthBar(null, null, 20, new Vector2(100, 100));
+            Flip = SpriteEffects.None;
+            CurrentLimit = IdleFrames;
+            Size = model.Size;
+            Speed = model.Speed;
+            HealthPoint = new HealthBar(null, null, 20, new Vector2(100, 100));
         }
 
         private void Move()
         {
-            direction = Vector2.Normalize(new Vector2(player.hitBox.Right / 2 - hitBox.Right / 2,
-                player.hitBox.Bottom / 2 - hitBox.Bottom / 2));
+            Direction = Vector2.Normalize(new Vector2(player.HitBox.Right / 2 - HitBox.Right / 2,
+                player.HitBox.Bottom / 2 - HitBox.Bottom / 2));
         }
 
         public void Update()
         {
-            var flag1 = true;
-            var flag2 = true;
-            var dirX = direction.X * Globals.Time * speed;
-            var dirY = direction.Y * Globals.Time * speed;
-
-            if (isAlive)
+            if (IsAlive)
             {
-                if (++attackTime > attackPeriod && !isAttack && GetDistance(hitBox, player.hitBox) < 120)
-                {
-                    SetAnimation(2);
-                    Move();
-                    flip = player.hitBox.Right / 2 > hitBox.Right / 2 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                    isAttack = true;
-                    attackTime = 0;
-                }
-
-                foreach (var e in map.currentLevel.objects)
-                {
-                    if (new RectangleF(hitBox.X + dirX, hitBox.Y, hitBox.Width, hitBox.Height).Intersects(e.hitBox))
-                    {
-                        flag1 = false;
-                    }
-                    if (new RectangleF(hitBox.X, hitBox.Y + dirY, hitBox.Width, hitBox.Height).Intersects(e.hitBox))
-                    {
-                        flag2 = false;
-                    }
-                }
-
-                if (flag1) position.X += dirX;
-                if (flag2) position.Y += dirY;
-
-                position = Vector2.Clamp(position, _minPos, _maxPos);
+                AttackMove();
+                CollisionAndMove();
+                Attack();
             }
 
             if (!flag && ++currentTime > period)
             {
                 currentTime = 0;
-                currentFrame.X = ++currentFrame.X % currentLimit;
+                currentFrame.X = ++currentFrame.X % CurrentLimit;
             }
-
-            if (isAlive) Attack();
         }
 
-        public double GetDistance(RectangleF rS, RectangleF rP)
+        private void AttackMove()
+        {
+            if (++attackTime > attackPeriod && !IsAttack && GetDistance(HitBox, player.HitBox) < 120)
+            {
+                SetAnimation(2);
+                Move();
+                Flip = player.HitBox.Right / 2 > HitBox.Right / 2 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                IsAttack = true;
+                attackTime = 0;
+            }
+        }
+
+        private void CollisionAndMove()
+        {
+            var flag1 = true;
+            var flag2 = true;
+            var dirX = Direction.X * Globals.Time * Speed;
+            var dirY = Direction.Y * Globals.Time * Speed;
+
+            foreach (var e in map.currentLevel.Level.Objects)
+            {
+                if (new RectangleF(HitBox.X + dirX, HitBox.Y, HitBox.Width, HitBox.Height).Intersects(e.HitBox))
+                {
+                    flag1 = false;
+                }
+                if (new RectangleF(HitBox.X, HitBox.Y + dirY, HitBox.Width, HitBox.Height).Intersects(e.HitBox))
+                {
+                    flag2 = false;
+                }
+            }
+
+            if (flag1) position.X += dirX;
+            if (flag2) position.Y += dirY;
+
+            position = Vector2.Clamp(position, _minPos, _maxPos);
+        }
+
+        private static double GetDistance(RectangleF rS, RectangleF rP)
         {
             return Math.Sqrt(Math.Pow((rS.Right / 2) - (rP.Right / 2), 2)
                + Math.Pow(rS.Bottom / 2 - (rP.Bottom / 2), 2));
         }
 
-        public bool IsMoving() => isMovingDown || isMovingUp || isMovingLeft || isMovingRight;
+        public bool IsMoving() => IsMovingDown || IsMovingUp || IsMovingLeft || IsMovingRight;
 
         public void Draw()
         {
-            Globals.SpriteBatch.Draw(spriteSheet, position,
-                new Rectangle(currentFrame.X * size,
-                currentFrame.Y * size, size, size),
-                Color.White, 0, Vector2.Zero, 1, flip, 0);
+            Globals.SpriteBatch.Draw(SpriteSheet, position,
+                new Rectangle(currentFrame.X * Size,
+                currentFrame.Y * Size, Size, Size),
+                Color.White, 0, Vector2.Zero, 1, Flip, 0);
             //Globals.SpriteBatch.DrawRectangle(new RectangleF(pos.X, pos.Y, 128, delta), Color.Black);
 
-            if (!isAlive)
+            if (!IsAlive)
             {
-                if (!deathAnimationFlag) SetAnimation(4);
-                deathAnimationFlag = true;
+                if (!DeathAnimationFlag) SetAnimation(4);
+                DeathAnimationFlag = true;
                 if (currentFrame.X == 4) flag = true;
             }
 
-            if (isAttack && currentFrame.X == attackFrames - 1)
+            if (IsAttack && currentFrame.X == AttackFrames - 1)
             {
                 SetAnimation(0);
-                isAttack = false;
+                IsAttack = false;
                 StopEntity();
             }
-
         }
 
         public void SetRunAnimation() { }
@@ -159,17 +166,17 @@ namespace Monogame.Models
             switch (currentAnimation)
             {
                 case 0:
-                    currentLimit = idleFrames;
+                    CurrentLimit = IdleFrames;
                     currentFrame.X = 0;
                     currentFrame.Y = 0;
                     break;
                 case 2:
-                    currentLimit = attackFrames;
+                    CurrentLimit = AttackFrames;
                     currentFrame.X = 0;
                     currentFrame.Y = currentAnimation;
                     break;
                 case 4:
-                    currentLimit = deathFrames;
+                    CurrentLimit = DeathFrames;
                     currentFrame.X = 0;
                     currentFrame.Y = currentAnimation;
                     break;
@@ -178,14 +185,14 @@ namespace Monogame.Models
 
         public void StopEntity()
         {
-            direction = Vector2.Zero;
-            isMovingUp = false;
-            isMovingDown = false;
-            isMovingLeft = false;
-            isMovingRight = false;
+            Direction = Vector2.Zero;
+            IsMovingUp = false;
+            IsMovingDown = false;
+            IsMovingLeft = false;
+            IsMovingRight = false;
         }
 
-        public static void SetBounds(Point mapSize, Point tileSize)
+        public void SetBounds(Point mapSize, Point tileSize)
         {
             _minPos = new(tileSize.X / 2 - 16, tileSize.Y / 2 - 20);
             _maxPos = new(mapSize.X - (2 * tileSize.X + 20), mapSize.Y - (2 * tileSize.X + 10));
@@ -193,10 +200,10 @@ namespace Monogame.Models
 
         public void Attack()
         {
-            if (!player.isImmunity && player.hitBox.Intersects(hitBox))
+            if (!player.IsImmunity && player.HitBox.Intersects(HitBox))
             {
-                player.isImmunity = true;
-                player.healthPoint.currentValue -= 10;
+                player.IsImmunity = true;
+                player.HealthPoint.currentValue -= 20;
             }
         }
     }

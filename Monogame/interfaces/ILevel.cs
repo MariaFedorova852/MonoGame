@@ -1,19 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 
 namespace Monogame.interfaces
 {
     public interface ILevel
     {
-        int[,] map { get; }
-        int mapWidth { get; }
-        int mapHeight { get; }
-        List<IObject> objects { get; }
-        List<IEntity> enemys { get; }
-        IEnumerable<IObject> enemysAndObjects { get; }
+        Vector2 EnterPosition { get; }
+        Vector2 ExitPosition { get; }
+        RectangleF Enter { get; }
+        RectangleF Exit { get; }
+        int[,] Map { get; }
+        int MapWidth { get; }
+        int MapHeight { get; }
+        List<IObject> Objects { get; }
+        List<IEntity> Entities { get; set; }
+        IEnumerable<IObject> EntitiesAndObjects { get; }
     }
 }

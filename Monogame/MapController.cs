@@ -5,41 +5,83 @@ using System;
 using System.Collections.Generic;
 using Global;
 using Microsoft.Xna.Framework;
+using System.Collections;
+using Monogame.Levels;
+using Monogame.objects;
+using MonoGame.Extended;
+using static Monogame.GameManager;
+using System.Linq;
 
 namespace Monogame
 {
     public class MapController
     {
-        public ILevel currentLevel;
         public static int cellSize = 64;
         public static int spriteSize = 64;
         private static Texture2D grassSprite;
         private static Texture2D plainsSprite;
         private static Texture2D decorSprite;
-        public Point mapSize { get => new(currentLevel.mapWidth * cellSize, currentLevel.mapHeight * cellSize); }
+        public LevelNode currentLevel;
+        public LinckedLevels levels;
 
-        public MapController(ILevel level)
+        public Point mapSize { get => new(currentLevel.Level.MapWidth * cellSize, currentLevel.Level.MapHeight * cellSize); }
+
+        public MapController()
         {
-            currentLevel = level;
             grassSprite = Globals.Content.Load<Texture2D>("grass");
             plainsSprite = Globals.Content.Load<Texture2D>("plainsEnlarged");
             decorSprite = Globals.Content.Load<Texture2D>("decorEnlarged");
+            var patterns = new LevelPatterns();
+            levels = new LinckedLevels
+            {
+                new LevelStart(),
+            };
+            currentLevel = levels.Head;
         }
+        public void ChangeCurrentLevel(bool direction)
+        {
+            if (direction)
+            {
+                currentLevel = currentLevel.NextLevel;
+                player.Pos = currentLevel.Level.EnterPosition;
+            }
+            else
+            {
+                currentLevel = currentLevel.PreviousLevel;
+                player.Pos = currentLevel.Level.ExitPosition;
+            }
+            currentLevel.Level.Entities.ForEach(e => e.SetBounds(map.mapSize, new Point(cellSize, cellSize)));
+            player.SetBounds(map.mapSize, new Point(cellSize, cellSize));
+        }
+
+        //private LinckedLevels GenerateLevels()
+        //{
+        //    LinckedLevels levels = new LinckedLevels();
+        //    var patterns = new LevelPatterns();
+        //    levels.Add(new LevelStart());
+
+        //    foreach (var p in patterns.patterns)
+        //    {
+        //        levels.Add(new Level1 { Entities = p });
+        //    }
+
+        //    return levels;
+        //}
 
         public void UpdateCurrentLevel(ILevel newLevel, Player player)
         {
-            currentLevel.objects.Remove(player);
-            currentLevel = newLevel;
-            currentLevel.objects.Add(player);
+            currentLevel.Level.Objects.Remove(player);
+            currentLevel.Level = newLevel;
+            currentLevel.Level.Objects.Add(player);
         }
 
         public void Draw()
         {
-            for (int i = 0; i < currentLevel.mapWidth; i++)
+            for (int i = 0; i < currentLevel.Level.MapWidth; i++)
             {
-                for (int j = 0; j < currentLevel.mapHeight; j++)
+                for (int j = 0; j < currentLevel.Level.MapHeight; j++)
                 {
-                    var e = currentLevel.map[j, i];
+                    var e = currentLevel.Level.Map[j, i];
                     switch (e)
                     {
                         case 0:
@@ -157,9 +199,18 @@ namespace Monogame
                             DrawGrass(i, j);
                             DrawTiles(64, 256, i, j);
                             break;
+                        case 35:
+                            DrawGrass(i, j);
+                            DrawTiles(192, 384, i, j);
+                            break;
+                        case 36:
+                            DrawGrass(i, j);
+                            DrawTiles(192, 256, i, j);
+                            break;
                     }
                 }
             }
+            Globals.SpriteBatch.DrawRectangle(currentLevel.Level.Exit, Color.Black);
         }
 
         private void DrawTiles(int srcPosX, int srcPosY, int posI, int posJ)
@@ -184,15 +235,106 @@ namespace Monogame
                 new Rectangle(srcPosX + 1, srcPosY + 1, 64, 64),
                 Color.White, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 1);
         }
+    }
+    public class LevelNode
+    {
+        public ILevel Level { get; set; }
+        public LevelNode PreviousLevel { get; set; }
+        public LevelNode NextLevel { get; set; }
 
-        public int GetWidth()
+        public LevelNode(ILevel level)
         {
-            return cellSize * currentLevel.mapWidth + 15;
+            Level = level;
+        }
+    }
+
+    public class LinckedLevels : IEnumerable<LevelNode>
+    {
+        public LevelNode Head { get; set; }
+        public LevelNode Tail { get; set; }
+
+        public void Add(ILevel level)
+        {
+            LevelNode node = new(level);
+
+            if (Head == null)
+                Head = node;
+            else
+            {
+                Tail.NextLevel = node;
+                node.PreviousLevel = Tail;
+            }
+            Tail = node;
         }
 
-        public int GetHeight()
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)this).GetEnumerator();
+
+        IEnumerator<LevelNode> IEnumerable<LevelNode>.GetEnumerator()
         {
-            return cellSize * currentLevel.mapHeight + 14;
+            LevelNode current = Head;
+            while (current != null)
+            {
+                yield return current;
+                current = current.NextLevel;
+            }
         }
+    }
+
+    class LevelPatterns
+    {
+
+        public List<IObject> pattern1 = new List<IObject>
+        {
+            new Rock(new Vector2(64, 256)),
+            new Rock(new Vector2(128, 256)),
+            new Rock(new Vector2(192, 256)),
+            new Rock(new Vector2(256, 256)),
+            new Rock(new Vector2(320, 256)),
+            new Rock(new Vector2(320, 210)),
+            new Rock(new Vector2(320, 110)),
+            new Rock(new Vector2(320, 64)),
+
+            new Rock(new Vector2(64, 384)),
+            new Rock(new Vector2(128, 384)),
+            new Rock(new Vector2(192, 384)),
+            new Rock(new Vector2(256, 384)),
+            new Rock(new Vector2(320, 384)),
+            new Rock(new Vector2(320, 430)),
+            new Rock(new Vector2(320, 558)),
+            new Rock(new Vector2(320, 606)),
+
+            new Rock(new Vector2(576, 384)),
+            new Rock(new Vector2(640, 384)),
+            new Rock(new Vector2(704, 384)),
+            new Rock(new Vector2(768, 384)),
+            new Rock(new Vector2(832, 384)),
+            new Rock(new Vector2(576, 430)),
+            new Rock(new Vector2(576, 558)),
+            new Rock(new Vector2(576, 606)),
+
+            new Rock(new Vector2(576, 256)),
+            new Rock(new Vector2(640, 256)),
+            new Rock(new Vector2(704, 256)),
+            new Rock(new Vector2(768, 256)),
+            new Rock(new Vector2(832, 256)),
+            new Rock(new Vector2(576, 210)),
+            new Rock(new Vector2(576, 110)),
+            new Rock(new Vector2(576, 64)),
+
+        };
+        //public static List<IEntity> pattern2 = new List<IEntity>
+        //{
+        //    new Rock(new Point(200, 360)),
+        //    new Rock(new Point(720, 440)),
+        //    new Rock(new Point(300, 32)),
+        //    new Tree(new Point(600, 0)),
+        //    new Slime(800, 532, slimeModel),
+        //    new Slime(200, 453, slimeModel),
+        //    new Slime(500, 300, slimeModel),
+        //    new Rock(new Point(832, 256)),
+        //    new Rock(new Point(832, 304)),
+        //    new Rock(new Point(832, 352)),
+        //    new Rock(new Point(832, 400))
+        //};
     }
 }

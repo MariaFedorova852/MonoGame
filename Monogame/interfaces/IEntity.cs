@@ -1,5 +1,4 @@
-﻿using MonoGame.Extended;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Monogame.ProgressBar;
 using Microsoft.Xna.Framework;
 
@@ -7,29 +6,29 @@ namespace Monogame.interfaces
 {
     public interface IEntity : IObject
     {
-        HealthBar healthPoint { get; set; }
-        bool isAlive { get; }
-        float speed { get; set; }
+        HealthBar HealthPoint { get; set; }
+        bool IsAlive { get; }
+        float Speed { get; set; }
 
-        bool isMovingLeft { get; }
-        bool isMovingRight { get; }
-        bool isMovingUp { get; }
-        bool isMovingDown { get; }
-        bool isAttack { get; }
-        bool deathAnimationFlag { get; }
+        bool IsMovingLeft { get; }
+        bool IsMovingRight { get; }
+        bool IsMovingUp { get; }
+        bool IsMovingDown { get; }
+        bool IsAttack { get; }
+        bool DeathAnimationFlag { get; }
 
-        int currentLimit { get; set; }
-        int idleFrames { get; set; }
-        int runFrames { get; set; }
-        int attackFrames { get; set; }
-        int deathFrames { get; set; }
+        int CurrentLimit { get; set; }
+        int IdleFrames { get; set; }
+        int RunFrames { get; set; }
+        int AttackFrames { get; set; }
+        int DeathFrames { get; set; }
 
-        int spriteSize { get; set; }
-        int size { get; set; }
+        int SpriteSize { get; set; }
+        int Size { get; set; }
 
-        SpriteEffects flip { get; set; }
+        SpriteEffects Flip { get; set; }
 
-        Vector2 direction { get; set; }
+        Vector2 Direction { get; set; }
 
         void Update();
 
@@ -44,5 +43,6 @@ namespace Monogame.interfaces
         void StopEntity();
 
         void Attack();
+        void SetBounds(Point mapSize, Point tileSize);
     }
 }

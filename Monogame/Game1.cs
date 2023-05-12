@@ -21,7 +21,7 @@ namespace Monogame
 
         protected override void Initialize()
         {
-            Globals.WindowSize = new(1024, 768);
+            Globals.WindowSize = new(960, 704);
             graphics.PreferredBackBufferWidth = Globals.WindowSize.X;
             graphics.PreferredBackBufferHeight = Globals.WindowSize.Y;
             graphics.ApplyChanges();
@@ -51,7 +51,7 @@ namespace Monogame
 
         protected override void Draw(GameTime gameTime) 
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.Blue);
 
             gameManager.Draw();
 

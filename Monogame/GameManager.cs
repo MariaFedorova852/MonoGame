@@ -21,18 +21,17 @@ namespace Monogame
 
         public GameManager()
         {
-            player = new Player(new Vector2(0, 0), new PlayerModel(), Globals.Content.Load<Texture2D>("playerEnlarged++"));
-            map = new MapController(new LevelStart());
-            map.currentLevel.objects.Add(player);
-            Slime.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));
-            Player.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));
+            player = new Player(new Vector2(1800, 800), new PlayerModel(), Globals.Content.Load<Texture2D>("playerEnlarged++"));
+            map = new MapController();
+            map.currentLevel.Level.Entities.ForEach(e => e.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize)));
+            player.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));
         }
 
         private void CalculateTranslation()
         {
-            var dx = (Globals.WindowSize.X / 2) - player.position.X - player.size / 2;
+            var dx = (Globals.WindowSize.X / 2) - player.position.X - player.Size / 2;
             dx = MathHelper.Clamp(dx, -map.mapSize.X + Globals.WindowSize.X, 0);
-            var dy = (Globals.WindowSize.Y / 2) - player.position.Y - player.size / 2;
+            var dy = (Globals.WindowSize.Y / 2) - player.position.Y - player.Size / 2;
             dy = MathHelper.Clamp(dy, -map.mapSize.Y + Globals.WindowSize.Y, 0);
             _translation = Matrix.CreateTranslation(dx, dy, 0f);
         }
@@ -40,7 +39,7 @@ namespace Monogame
         public void Update()
         {
             PlayerController.Update();
-            map.currentLevel.enemys.ForEach(e => e.Update());
+            map.currentLevel.Level.Entities.ForEach(e => e.Update());
             player.Update();
             CalculateTranslation();
         }
@@ -49,11 +48,11 @@ namespace Monogame
         {
             Globals.SpriteBatch.Begin(transformMatrix: _translation);
             map.Draw();
-            foreach (var e in new List<IObject>(map.currentLevel.enemysAndObjects) { player }.OrderBy(x => x.pos.Y + x.delta)) e.Draw();
+            foreach (var e in new List<IObject>(map.currentLevel.Level.EntitiesAndObjects) { player }.OrderBy(x => x.Pos.Y + x.Delta)) e.Draw();
             Globals.SpriteBatch.End();
 
             Globals.SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred);
-            player.healthPoint.Draw();
+            player.HealthPoint.Draw();
             Globals.SpriteBatch.End();
         }
     }

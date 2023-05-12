@@ -9,18 +9,18 @@ namespace Monogame.Models
 {
     public class PlayerModel : ICreature
     {
-        public int size => 192;
+        public int Size => 192;
 
-        public int speed => 350;
+        public int Speed => 350;
 
-        public int spriteSize => 48;
+        public int SpriteSize => 48;
 
-        int ICreature.idleFrames => 6;
+        int ICreature.IdleFrames => 6;
 
-        int ICreature.runFrames => 6;
+        int ICreature.RunFrames => 6;
 
-        int ICreature.attackFrames => 4;
+        int ICreature.AttackFrames => 4;
 
-        int ICreature.deathFrames => 3;
+        int ICreature.DeathFrames => 3;
     }
 }
