@@ -42,19 +42,15 @@ namespace Monogame
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit(); 
-           
             Globals.Update(gameTime);
             gameManager.Update();
-
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime) 
         {
             GraphicsDevice.Clear(Color.Blue);
-
             gameManager.Draw();
-
             base.Draw(gameTime);
         }
     }

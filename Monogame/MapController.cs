@@ -39,6 +39,7 @@ namespace Monogame
             };
             currentLevel = levels.Head;
         }
+
         public void ChangeCurrentLevel(bool direction)
         {
             if (direction)
@@ -223,6 +224,7 @@ namespace Monogame
                 Color.White, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 1);
         }
     }
+
     public class LevelNode
     {
         public ILevel Level { get; set; }
