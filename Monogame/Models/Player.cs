@@ -2,21 +2,27 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monogame.interfaces;
+using Monogame.objects;
+using Monogame.ProgressBar;
 using MonoGame.Extended;
 using System.Linq;
 using static Monogame.GameManager;
+using System.Timers;
 
 namespace Monogame.Models
 {
-    public class Player : IEntity
+    public class Player : IEntity , IObject
     {
         public RectangleF currentAttack;
         public Vector2 position;
         public Point currentFrame;
-        public int healthPoint { get; set; }
-        public bool isAlive { get; set; }
+
+        public Vector2 pos { get => position; set => position = value; }
+        public HealthBar healthPoint { get; set; }
+        public bool isAlive { get => healthPoint.currentValue > 0; }
         public float speed { get; set; }
 
+        public bool isImmunity { get; set; }
         public bool isMovingLeft { get; set; }
         public bool isMovingRight { get; set; }
         public bool isMovingUp { get; set; }
@@ -36,6 +42,8 @@ namespace Monogame.Models
         public SpriteEffects flip { get; set; }
 
         public Texture2D spriteSheet { get; set; }
+
+        public Vector2 direction { get ; set; }
         public RectangleF hitBox => new RectangleF(position.X + 80, position.Y + 142, 36, 20);
         //public RectangleF hitBox => new RectangleF(position.X, position.Y, 192, 192);
         public RectangleF attackUp => new RectangleF(position.X + 61, position.Y + 88, 72, 20);
@@ -43,7 +51,9 @@ namespace Monogame.Models
         public RectangleF attackRight => new RectangleF(position.X + 140, position.Y + 128, 24, 48);
         public RectangleF attackLeft => new RectangleF(position.X + 28, position.Y + 128, 24, 48);
 
+        public int delta => 168;
         private static Vector2 _minPos, _maxPos;
+        private Timer immunityTimer = new Timer(750);
 
         int currentTime = 0;
         int period = 5;
@@ -61,14 +71,45 @@ namespace Monogame.Models
             currentLimit = idleFrames;
             size = model.size;
             speed = model.speed;
-            isAlive = true;
+            immunityTimer.Elapsed += ImmunityTimer_Elapsed;
+            healthPoint = new HealthBar(null, null, 100, new Vector2(Globals.WindowSize.X - 50, Globals.WindowSize.Y - 200));
+        }
+        private void ImmunityTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            isImmunity = false;
+            immunityTimer.Stop();
         }
 
         public void Update()
         {
+            var flag1 = true;
+            var flag2 = true;
+            var dirX = PlayerController.Direction.X * Globals.Time * speed;
+            var dirY = PlayerController.Direction.Y * Globals.Time * speed;
+            healthPoint.Update();
+            
+            if (isImmunity && !immunityTimer.Enabled)
+            {
+                immunityTimer.Start();
+            }
+
             if (isAlive)
             {
-                position += PlayerController.Direction * Globals.Time * speed;
+                foreach (var e in map.currentLevel.objects)
+                {
+                    if (new RectangleF(hitBox.X + dirX, hitBox.Y, hitBox.Width, hitBox.Height).Intersects(e.hitBox))
+                    {
+                        flag1 = false;
+                    }
+                    if (new RectangleF(hitBox.X, hitBox.Y + dirY, hitBox.Width, hitBox.Height).Intersects(e.hitBox))
+                    {
+                        flag2 = false;
+                    }
+                }
+
+                if (flag1) position.X += dirX;
+                if (flag2) position.Y += dirY;
+
                 position = Vector2.Clamp(position, _minPos, _maxPos);
             }
 
@@ -85,11 +126,11 @@ namespace Monogame.Models
         public void Draw()
         {
             Globals.SpriteBatch.Draw(spriteSheet, position,
-                new Rectangle(currentFrame.X * size,
-                currentFrame.Y * size, size, size),
+                new Rectangle(currentFrame.X * size, currentFrame.Y * size, size, size),
                 Color.White, 0, Vector2.Zero, 1, flip, 0);
-            Globals.SpriteBatch.DrawRectangle(hitBox, Color.Black);
-            Globals.SpriteBatch.DrawRectangle(currentAttack, Color.Black);
+            //Globals.SpriteBatch.DrawRectangle(hitBox, Color.Black);
+            //Globals.SpriteBatch.DrawRectangle(new RectangleF(pos.X, pos.Y, 192, delta), Color.Black);
+            //Globals.SpriteBatch.DrawRectangle(currentAttack, Color.Black);
 
             if (!isAlive)
             {
@@ -164,7 +205,7 @@ namespace Monogame.Models
             isMovingRight = false;
         }
 
-        public void SetBounds(Point mapSize, Point tileSize)
+        public static void SetBounds(Point mapSize, Point tileSize)
         {
             _minPos = new(-tileSize.X / 2 + 20, -tileSize.Y);
             _maxPos = new(mapSize.X - (2 * tileSize.X + tileSize.X / 2 + 20), mapSize.Y - (3 * tileSize.X + 24));
@@ -172,11 +213,12 @@ namespace Monogame.Models
 
         public void Attack()
         {
-            foreach (var entity in map.currentLevel.entities.Where(x => x.GetType() != typeof(Player)))
+            foreach (var entity in map.currentLevel.enemys.Where(x => x.GetType() != typeof(Player)))
             {
                 if (currentAttack.Intersects(entity.hitBox))
                 {
-                    entity.isAlive = false;
+                    entity.healthPoint.currentValue -= 10;
+                    entity.direction = -entity.direction;
                 }
             }
         }

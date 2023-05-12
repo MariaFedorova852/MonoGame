@@ -15,6 +15,7 @@ namespace Monogame
         public static int spriteSize = 64;
         private static Texture2D grassSprite;
         private static Texture2D plainsSprite;
+        private static Texture2D decorSprite;
         public Point mapSize { get => new(currentLevel.mapWidth * cellSize, currentLevel.mapHeight * cellSize); }
 
         public MapController(ILevel level)
@@ -22,13 +23,14 @@ namespace Monogame
             currentLevel = level;
             grassSprite = Globals.Content.Load<Texture2D>("grass");
             plainsSprite = Globals.Content.Load<Texture2D>("plainsEnlarged");
+            decorSprite = Globals.Content.Load<Texture2D>("decorEnlarged");
         }
 
         public void UpdateCurrentLevel(ILevel newLevel, Player player)
         {
-            currentLevel.entities.Remove(player);
+            currentLevel.objects.Remove(player);
             currentLevel = newLevel;
-            currentLevel.entities.Add(player);
+            currentLevel.objects.Add(player);
         }
 
         public void Draw()
@@ -80,6 +82,81 @@ namespace Monogame
                             DrawGrass(i, j);
                             DrawTiles(64, 320, i, j);
                             break;
+                        case 12:
+                            DrawTiles(0, 192, i, j);
+                            break;
+                        case 13:
+                            DrawTiles(64, 64, i, j);
+                            break;
+                        case 14:
+                            DrawTiles(128, 64, i, j);
+                            break;
+                        case 15:
+                            DrawTiles(192, 64, i, j);
+                            break;
+                        case 16:
+                            DrawTiles(64, 128, i, j);
+                            break;
+                        case 17:
+                            DrawTiles(128, 128, i, j);
+                            break;
+                        case 18:
+                            DrawTiles(192, 128, i, j);
+                            break;
+                        case 19:
+                            DrawTiles(256, 0, i, j);
+                            break;
+                        case 20:
+                            DrawTiles(320, 0, i, j);
+                            break;
+                        case 21:
+                            DrawTiles(256, 64, i, j);
+                            break;
+                        case 22:
+                            DrawTiles(320, 64, i, j);
+                            break;
+                        case 23:
+                            DrawTiles(256, 128, i, j);
+                            break;
+                        case 24:
+                            DrawTiles(320, 128, i, j);
+                            break;
+                        case 25:
+                            DrawDecor(0, 0, i, j);
+                            break;
+                        case 26:
+                            DrawDecor(64, 0, i, j);
+                            break;
+                        case 27:
+                            DrawDecor(0, 0, i, j);
+                            break;
+                        case 28:
+                            DrawDecor(192, 0, i, j);
+                            break;
+                        case 29:
+                            DrawTiles(128, 64, i, j);
+                            DrawDecor(0, 256, i, j);
+                            break;
+                        case 30:
+                            DrawTiles(128, 64, i, j);
+                            DrawDecor(64, 256, i, j);
+                            break;
+                        case 31:
+                            DrawTiles(128, 64, i, j);
+                            DrawDecor(128, 256, i, j);
+                            break;
+                        case 32:
+                            DrawTiles(128, 64, i, j);
+                            DrawDecor(192, 256, i, j);
+                            break;
+                        case 33:
+                            DrawGrass(i, j);
+                            DrawTiles(64, 384, i, j);
+                            break;
+                        case 34:
+                            DrawGrass(i, j);
+                            DrawTiles(64, 256, i, j);
+                            break;
                     }
                 }
             }
@@ -99,6 +176,13 @@ namespace Monogame
                 new Vector2(posI * cellSize, posJ * cellSize),
                 new Rectangle(Point.Zero, new Point(spriteSize, spriteSize)),
                 Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 1);
+        }
+
+        private void DrawDecor(int srcPosX, int srcPosY, int posI, int posJ)
+        {
+            Globals.SpriteBatch.Draw(decorSprite, new Vector2(posI * cellSize, posJ * cellSize),
+                new Rectangle(srcPosX + 1, srcPosY + 1, 64, 64),
+                Color.White, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 1);
         }
 
         public int GetWidth()

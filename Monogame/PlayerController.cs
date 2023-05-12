@@ -68,31 +68,31 @@ namespace Monogame
             {
                 if (key.IsKeyDown(Keys.Up))
                 {
-                    player.isAttack = true;
                     player.SetAnimation(8);
+                    player.isAttack = true;
                     player.currentAttack = player.attackUp;
                     player.Attack();
                 }
                 if (key.IsKeyDown(Keys.Down))
                 {
-                    player.isAttack = true;
                     player.SetAnimation(6);
+                    player.isAttack = true;
                     player.currentAttack = player.attackDown;
                     player.Attack();
                 }
                 if (key.IsKeyDown(Keys.Left))
                 {
+                    player.SetAnimation(7);
                     player.isAttack = true;
                     player.flip = SpriteEffects.FlipHorizontally;
-                    player.SetAnimation(7);
                     player.currentAttack = player.attackLeft;
                     player.Attack();
                 }
                 if (key.IsKeyDown(Keys.Right))
                 {
+                    player.SetAnimation(7);
                     player.isAttack = true;
                     player.flip = SpriteEffects.None;
-                    player.SetAnimation(7);
                     player.currentAttack = player.attackRight;
                     player.Attack();
                 }

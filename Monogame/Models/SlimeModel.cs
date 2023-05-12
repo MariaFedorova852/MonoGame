@@ -11,7 +11,7 @@ namespace Monogame.Models
     {
         public int size => 128;
 
-        public int speed => 100;
+        public int speed => 300;
 
         public int spriteSize => 32;
 

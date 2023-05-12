@@ -1,12 +1,14 @@
 ﻿using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;
+using Monogame.ProgressBar;
+using Microsoft.Xna.Framework;
 
 namespace Monogame.interfaces
 {
-    public interface IEntity
+    public interface IEntity : IObject
     {
-        int healthPoint { get; set; }
-        bool isAlive { get; set; }
+        HealthBar healthPoint { get; set; }
+        bool isAlive { get; }
         float speed { get; set; }
 
         bool isMovingLeft { get; }
@@ -25,16 +27,13 @@ namespace Monogame.interfaces
         int spriteSize { get; set; }
         int size { get; set; }
 
-        Texture2D spriteSheet { get; set; }
-        RectangleF hitBox { get; }
         SpriteEffects flip { get; set; }
 
+        Vector2 direction { get; set; }
 
         void Update();
 
         bool IsMoving();
-
-        void Draw();
 
         void SetRunAnimation();
 

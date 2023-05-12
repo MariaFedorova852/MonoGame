@@ -9,6 +9,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Monogame.Levels;
+using Monogame.interfaces;
 
 namespace Monogame
 {
@@ -16,13 +17,15 @@ namespace Monogame
     {
         public static Player player;
         public static MapController map;
-        private Matrix _translation;
+        public static Matrix _translation;
 
         public GameManager()
         {
             player = new Player(new Vector2(0, 0), new PlayerModel(), Globals.Content.Load<Texture2D>("playerEnlarged++"));
             map = new MapController(new LevelStart());
-            player.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));
+            map.currentLevel.objects.Add(player);
+            Slime.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));
+            Player.SetBounds(map.mapSize, new Point(MapController.cellSize, MapController.cellSize));
         }
 
         private void CalculateTranslation()
@@ -37,7 +40,7 @@ namespace Monogame
         public void Update()
         {
             PlayerController.Update();
-            map.currentLevel.entities.ForEach(e => e.Update());
+            map.currentLevel.enemys.ForEach(e => e.Update());
             player.Update();
             CalculateTranslation();
         }
@@ -46,8 +49,11 @@ namespace Monogame
         {
             Globals.SpriteBatch.Begin(transformMatrix: _translation);
             map.Draw();
-            map.currentLevel.entities.ForEach(e => e.Draw());
-            player.Draw();
+            foreach (var e in new List<IObject>(map.currentLevel.enemysAndObjects) { player }.OrderBy(x => x.pos.Y + x.delta)) e.Draw();
+            Globals.SpriteBatch.End();
+
+            Globals.SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred);
+            player.healthPoint.Draw();
             Globals.SpriteBatch.End();
         }
     }
