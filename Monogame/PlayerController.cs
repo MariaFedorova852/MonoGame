@@ -97,6 +97,12 @@ namespace Monogame
                     player.Attack();
                 }
             }
+            if (key.IsKeyDown(Keys.C))
+            {
+                player.HealthPoint.currentValue = 100;
+                player.Flag = false;
+                player.DeathAnimationFlag = false;
+            }
             if (direction != Vector2.Zero)
             {
                 direction.Normalize();
